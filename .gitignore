@@ -16,6 +16,7 @@ third_party/torchdrug/
 
 data/raw/guidelines_graph/*
 !data/raw/guidelines_graph/.gitkeep
+!data/raw/guidelines_graph/networkx_graph.json
 data/raw/papers/*
 !data/raw/papers/.gitkeep
 
