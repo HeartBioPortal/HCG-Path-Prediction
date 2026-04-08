@@ -1,0 +1,4 @@
+reproduce/** linguist-vendored
+*.txt text
+*.pth binary
+data/mock/*.txt text

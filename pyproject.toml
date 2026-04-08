@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cvd-biopathnet"
+version = "0.1.0"
+description = "Local and HPC-ready BioPathNet pipeline for cardiovascular guideline graphs"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "OpenAI Codex" }
+]
+dependencies = [
+  "networkx>=3.2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.5",
+]
+
+[project.scripts]
+cvd-biopathnet = "cvd_biopathnet.cli:main"
+
+[tool.setuptools]
+
+[tool.setuptools.packages.find]
+include = ["cvd_biopathnet*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
