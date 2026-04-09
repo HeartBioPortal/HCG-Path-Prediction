@@ -64,7 +64,7 @@ activate_env() {
 
 activate_env
 
-python -m pip install --upgrade pip setuptools wheel
+python -m pip install --upgrade pip wheel "setuptools<82"
 
 if [ "${BIOPATHNET_INSTALL_MODE}" = "gpu" ]; then
   pip install --no-cache-dir \

@@ -104,6 +104,21 @@ OUTPUT_DIR_HPC=/path/to/hpc/cvd-biopathnet/outputs/cvd_assoc
 LOG_DIR_HPC=/path/to/hpc/cvd-biopathnet/logs
 CONDA_ENV_NAME=biopathnet
 HPC_REMOTE=user@login.cluster.example.edu
+ENV_MANAGER=venv
+VENV_PATH=/path/to/hpc/cvd-biopathnet/.venv
+BIOPATHNET_INSTALL_MODE=cpu
+BIOPATHNET_GPUS=null
+BIOPATHNET_BATCH_SIZE=4
+BIOPATHNET_NUM_EPOCHS=5
+BIOPATHNET_SEED=1024
+OMP_NUM_THREADS=1
+MKL_NUM_THREADS=1
+TORCH_EXTENSIONS_DIR=/path/to/hpc/scratch/torch_extensions
+BIOPATHNET_CLEAR_TORCH_EXTENSIONS=0
+SBATCH_ACCOUNT=my_account
+SBATCH_CPUS_PER_TASK=4
+SBATCH_MEM=48G
+SBATCH_TIME=12:00:00
 """
 
 

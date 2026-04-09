@@ -7,6 +7,7 @@ This repo's BioPathNet stack was debugged against a local `.venv` on HPC.
 - Prefer Python `3.10` when creating a fresh environment.
 - CPU smoke tests can run with `torch==2.0.1+cpu`.
 - `setuptools` must stay below `82` because `torch 2.0.1` still imports `pkg_resources`.
+- NBFNet itself is officially documented around Python `3.7/3.8` and PyTorch `>= 1.8.0`, so the current Python `3.11` / Torch `2.0.1` stack should be treated as a pragmatic compatibility setup rather than the upstream-tested matrix.
 
 ## Symptom we hit
 
@@ -21,6 +22,31 @@ pin setuptools back below `82`:
 ```bash
 python -m pip install --force-reinstall "setuptools<82"
 ```
+
+## Symptom we hit again
+
+If a Slurm training run loads the dataset and then sits at:
+
+```text
+Epoch 0 begin
+```
+
+for hours without advancing, the official NBFNet FAQ says this is usually a broken Torch JIT extensions cache. Clear the cache and rerun:
+
+```bash
+scancel <jobid>
+rm -rf "${TORCH_EXTENSIONS_DIR:-$HOME/.cache/torch_extensions}"
+```
+
+Then set:
+
+```bash
+BIOPATHNET_CLEAR_TORCH_EXTENSIONS=1
+OMP_NUM_THREADS=1
+MKL_NUM_THREADS=1
+```
+
+for the next smoke run. The repo's runtime scripts now honor those variables automatically.
 
 ## Reproducible setup
 
@@ -43,6 +69,10 @@ The Slurm job scripts use the same environment selection logic. For a repo-local
 ```bash
 ENV_MANAGER=venv
 VENV_PATH=/N/u/kvand/BigRed200/HCG-Path-Prediction/.venv
+OMP_NUM_THREADS=1
+MKL_NUM_THREADS=1
+TORCH_EXTENSIONS_DIR=/N/scratch/kvand/hbp/torch_extensions
+BIOPATHNET_CLEAR_TORCH_EXTENSIONS=0
 ```
 
 For GPU installs:

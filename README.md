@@ -99,6 +99,10 @@ BIOPATHNET_GPUS=null
 BIOPATHNET_BATCH_SIZE=4
 BIOPATHNET_NUM_EPOCHS=5
 BIOPATHNET_SEED=1024
+OMP_NUM_THREADS=1
+MKL_NUM_THREADS=1
+TORCH_EXTENSIONS_DIR=/N/scratch/kvand/hbp/torch_extensions
+BIOPATHNET_CLEAR_TORCH_EXTENSIONS=0
 SBATCH_ACCOUNT=r01806
 SBATCH_CPUS_PER_TASK=4
 SBATCH_MEM=48G
@@ -135,6 +139,13 @@ bash scripts/run_pipeline.sh
 ```
 
 The canonical `run_*` wrappers default to `sbatch` on HPC and can pass through account, CPU, memory, time, output, error, partition, QOS, and GPU flags from `.env` or `configs/paths.env`. The Slurm job scripts now also honor `ENV_MANAGER=venv` with `VENV_PATH`, so they no longer assume Conda is installed on the compute nodes. The pipeline wrapper can optionally preprocess first, then submit train, predict, and visualization jobs using Slurm dependencies.
+
+For CPU smoke runs, the runtime activation layer now also honors:
+
+- `OMP_NUM_THREADS`
+- `MKL_NUM_THREADS`
+- `TORCH_EXTENSIONS_DIR`
+- `BIOPATHNET_CLEAR_TORCH_EXTENSIONS`
 
 ## Data files and BioPathNet semantics
 
@@ -189,8 +200,9 @@ python3 -m cvd_biopathnet.cli build-slurm --job visualize --output scripts/submi
 
 - `ModuleNotFoundError: cvd_biopathnet`: install the project with `python3 -m pip install -e .`, or run from the repo root after installation.
 - `No checkpoint found`: run training first, or set `CHECKPOINT_PATH` before prediction / visualization.
-- `torchdrug` / PyG install failures on HPC: use [scripts/setup_hpc_env.sh](/Users/kvand/Documents/B528-class/project/scripts/setup_hpc_env.sh) and adjust `HPC_MODULES`, CUDA wheel URLs, or `BIOPATHNET_INSTALL_MODE=cpu`.
+- `torchdrug` / PyG install failures on HPC: use [scripts/setup_runtime_env.sh](/Users/kvand/Documents/B528-class/project/scripts/setup_runtime_env.sh) and adjust `HPC_MODULES`, CUDA wheel URLs, or `BIOPATHNET_INSTALL_MODE=cpu`.
 - Slurm account or partition errors: uncomment and edit the optional `#SBATCH` lines in the batch templates for your cluster.
+- Training loads the dataset but stays at `Epoch 0 begin`: this is a known NBFNet symptom of a broken Torch JIT cache. Set `BIOPATHNET_CLEAR_TORCH_EXTENSIONS=1`, keep `TORCH_EXTENSIONS_DIR` on scratch if possible, and rerun a 1-epoch smoke test.
 - Raw-format detection errors: ensure the input directory contains a supported schema with node IDs, node types, edge sources, edge targets, and edge relations.
 
 
@@ -203,6 +215,23 @@ ENV_MANAGER=venv BIOPATHNET_INSTALL_MODE=cpu bash scripts/setup_runtime_env.sh
 ```
 
 Use `BIOPATHNET_INSTALL_MODE=gpu` for CUDA installs. This workflow also pins `setuptools<82` because `torch==2.0.1` still imports `pkg_resources`.
+
+If a job appears stuck immediately after `Epoch 0 begin`, clear the Torch JIT cache before retrying:
+
+```bash
+rm -rf "${TORCH_EXTENSIONS_DIR:-$HOME/.cache/torch_extensions}"
+```
+
+Then submit a tiny smoke job with:
+
+```bash
+export BIOPATHNET_CLEAR_TORCH_EXTENSIONS=1
+export BIOPATHNET_NUM_EPOCHS=1
+export BIOPATHNET_BATCH_SIZE=1
+export OMP_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+bash scripts/run_train.sh
+```
 
 ## Default Run Mode On HPC
 
