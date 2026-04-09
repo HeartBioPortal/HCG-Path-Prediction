@@ -44,6 +44,13 @@ export SBATCH_ACCOUNT=r01806
 
 or place it in `configs/paths.env`.
 
+The Slurm templates now default to CPU-compatible submission. If you want GPU scheduling, opt in explicitly:
+
+```bash
+export SBATCH_GRES=gpu:1
+export BIOPATHNET_GPUS='[0]'
+```
+
 ## Verification
 
 ```bash

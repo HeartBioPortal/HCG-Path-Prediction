@@ -190,3 +190,19 @@ export SBATCH_ACCOUNT=r01806
 ```
 
 You can also store that value in `configs/paths.env`.
+
+The submitted Slurm templates now default to CPU-compatible runs. To match a CPU-style submission similar to your previous jobs, you can also set:
+
+```bash
+export SBATCH_CPUS_PER_TASK=4
+export SBATCH_MEM=48G
+export SBATCH_TIME=12:00:00
+export BIOPATHNET_GPUS=null
+```
+
+If you want a GPU job instead, opt in explicitly with:
+
+```bash
+export SBATCH_GRES=gpu:1
+export BIOPATHNET_GPUS='[0]'
+```

@@ -12,6 +12,13 @@ build_sbatch_args() {
   local args=()
   local account="${SBATCH_ACCOUNT:-${SLURM_ACCOUNT:-}}"
   local partition="${SBATCH_PARTITION:-${SLURM_PARTITION:-}}"
+  local gres="${SBATCH_GRES:-}"
+  local cpus="${SBATCH_CPUS_PER_TASK:-}"
+  local memory="${SBATCH_MEM:-}"
+  local time_limit="${SBATCH_TIME:-}"
+  local output_path="${SBATCH_OUTPUT:-}"
+  local error_path="${SBATCH_ERROR:-}"
+  local qos="${SBATCH_QOS:-}"
 
   if [ -n "${account}" ]; then
     args+=(--account "${account}")
@@ -19,6 +26,34 @@ build_sbatch_args() {
 
   if [ -n "${partition}" ]; then
     args+=(--partition "${partition}")
+  fi
+
+  if [ -n "${gres}" ]; then
+    args+=(--gres "${gres}")
+  fi
+
+  if [ -n "${cpus}" ]; then
+    args+=(--cpus-per-task "${cpus}")
+  fi
+
+  if [ -n "${memory}" ]; then
+    args+=(--mem "${memory}")
+  fi
+
+  if [ -n "${time_limit}" ]; then
+    args+=(--time "${time_limit}")
+  fi
+
+  if [ -n "${output_path}" ]; then
+    args+=(--output "${output_path}")
+  fi
+
+  if [ -n "${error_path}" ]; then
+    args+=(--error "${error_path}")
+  fi
+
+  if [ -n "${qos}" ]; then
+    args+=(--qos "${qos}")
   fi
 
   printf '%s\n' "${args[@]}"

@@ -5,9 +5,9 @@
 #SBATCH --time=12:00:00
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=48G
-#SBATCH --gres=gpu:1
 ##SBATCH --partition=gpu
 ##SBATCH --account=my_account
+##SBATCH --gres=gpu:1
 
 set -euo pipefail
 
@@ -15,7 +15,7 @@ PROJECT_ROOT="${PROJECT_ROOT_HPC:-$PWD}"
 DATASET_DIR="${DATASET_DIR_HPC:-$PROJECT_ROOT/data/processed/cvd_guidelines_assoc}"
 OUTPUT_DIR="${OUTPUT_DIR_HPC:-$PROJECT_ROOT/outputs/cvd_assoc/checkpoints}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-biopathnet}"
-BIOPATHNET_GPUS="${BIOPATHNET_GPUS:-[0]}"
+BIOPATHNET_GPUS="${BIOPATHNET_GPUS:-null}"
 BIOPATHNET_BATCH_SIZE="${BIOPATHNET_BATCH_SIZE:-4}"
 BIOPATHNET_NUM_EPOCHS="${BIOPATHNET_NUM_EPOCHS:-5}"
 BIOPATHNET_SEED="${BIOPATHNET_SEED:-1024}"
