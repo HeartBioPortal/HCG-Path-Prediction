@@ -154,3 +154,31 @@ python3 -m cvd_biopathnet.cli build-slurm --job visualize --output scripts/submi
 - `torchdrug` / PyG install failures on HPC: use [scripts/setup_hpc_env.sh](/Users/kvand/Documents/B528-class/project/scripts/setup_hpc_env.sh) and adjust `HPC_MODULES`, CUDA wheel URLs, or `BIOPATHNET_INSTALL_MODE=cpu`.
 - Slurm account or partition errors: uncomment and edit the optional `#SBATCH` lines in the batch templates for your cluster.
 - Raw-format detection errors: ensure the input directory contains a supported schema with node IDs, node types, edge sources, edge targets, and edge relations.
+
+
+## HPC Runtime Notes
+
+For HPC `.venv` setup, use:
+
+```bash
+ENV_MANAGER=venv BIOPATHNET_INSTALL_MODE=cpu bash scripts/setup_runtime_env.sh
+```
+
+Use `BIOPATHNET_INSTALL_MODE=gpu` for CUDA installs. This workflow also pins `setuptools<82` because `torch==2.0.1` still imports `pkg_resources`.
+
+## Default Run Mode On HPC
+
+The canonical run wrappers are now:
+
+```bash
+bash scripts/run_train.sh
+bash scripts/run_predict.sh
+bash scripts/run_visualize.sh
+bash scripts/run_pipeline.sh
+```
+
+When `sbatch` is available, these wrappers default to Slurm submission instead of running directly on the login node. To force the older direct-run path for smoke tests, use:
+
+```bash
+RUN_MODE=local bash scripts/run_train.sh
+```

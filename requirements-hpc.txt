@@ -1,0 +1,7 @@
+-r requirements-dev.txt
+setuptools<82
+jinja2
+pandas
+ogb
+easydict
+numpy==1.26.4
