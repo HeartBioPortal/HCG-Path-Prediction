@@ -36,6 +36,14 @@ For GPU installs:
 ENV_MANAGER=venv BIOPATHNET_INSTALL_MODE=gpu bash scripts/setup_runtime_env.sh
 ```
 
+For IU HPC submission, set your RT project account before using the sbatch-first wrappers:
+
+```bash
+export SBATCH_ACCOUNT=r01806
+```
+
+or place it in `configs/paths.env`.
+
 ## Verification
 
 ```bash

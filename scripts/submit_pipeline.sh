@@ -8,6 +8,22 @@ if [ -f "${PROJECT_ROOT}/configs/paths.env" ]; then
   set +a
 fi
 
+build_sbatch_args() {
+  local args=()
+  local account="${SBATCH_ACCOUNT:-${SLURM_ACCOUNT:-}}"
+  local partition="${SBATCH_PARTITION:-${SLURM_PARTITION:-}}"
+
+  if [ -n "${account}" ]; then
+    args+=(--account "${account}")
+  fi
+
+  if [ -n "${partition}" ]; then
+    args+=(--partition "${partition}")
+  fi
+
+  printf '%s\n' "${args[@]}"
+}
+
 PROJECT_ROOT_HPC="${PROJECT_ROOT_HPC:-${PROJECT_ROOT}}"
 RAW_GRAPH_DIR="${RAW_GRAPH_DIR_HPC:-${RAW_GRAPH_DIR_LOCAL:-${PROJECT_ROOT_HPC}/data/raw/guidelines_graph}}"
 DATASET_DIR_HPC="${DATASET_DIR_HPC:-${PROJECT_ROOT_HPC}/data/processed/cvd_guidelines_assoc}"
@@ -15,6 +31,13 @@ OUTPUT_DIR_HPC="${OUTPUT_DIR_HPC:-${PROJECT_ROOT_HPC}/outputs/cvd_assoc/checkpoi
 LOG_DIR_HPC="${LOG_DIR_HPC:-${PROJECT_ROOT_HPC}/logs/slurm}"
 
 export PROJECT_ROOT_HPC DATASET_DIR_HPC OUTPUT_DIR_HPC LOG_DIR_HPC
+
+SBATCH_ARGS=()
+while IFS= read -r line; do
+  if [ -n "${line}" ]; then
+    SBATCH_ARGS+=("${line}")
+  fi
+done < <(build_sbatch_args)
 
 if [ "${RUN_PREPROCESS:-0}" = "1" ]; then
   PREPROCESS_CMD=(
@@ -39,11 +62,11 @@ if [ "${RUN_PREPROCESS:-0}" = "1" ]; then
   python3 -m cvd_biopathnet.cli validate-dataset --dataset-dir "${DATASET_DIR_HPC}"
 fi
 
-train_job="$(sbatch "${PROJECT_ROOT}/scripts/submit_train.sbatch" | awk '{print $4}')"
+train_job="$(sbatch "${SBATCH_ARGS[@]}" "${PROJECT_ROOT}/scripts/submit_train.sbatch" | awk '{print $4}')"
 echo "Submitted train job ${train_job}"
 
 if [ "${SUBMIT_PREDICT:-1}" = "1" ]; then
-  predict_job="$(sbatch --dependency=afterok:${train_job} "${PROJECT_ROOT}/scripts/submit_predict.sbatch" | awk '{print $4}')"
+  predict_job="$(sbatch "${SBATCH_ARGS[@]}" --dependency=afterok:${train_job} "${PROJECT_ROOT}/scripts/submit_predict.sbatch" | awk '{print $4}')"
   echo "Submitted predict job ${predict_job}"
 else
   predict_job=""
@@ -51,9 +74,9 @@ fi
 
 if [ "${SUBMIT_VISUALIZE:-1}" = "1" ]; then
   if [ -n "${predict_job}" ]; then
-    visualize_job="$(sbatch --dependency=afterok:${predict_job} "${PROJECT_ROOT}/scripts/submit_visualize.sbatch" | awk '{print $4}')"
+    visualize_job="$(sbatch "${SBATCH_ARGS[@]}" --dependency=afterok:${predict_job} "${PROJECT_ROOT}/scripts/submit_visualize.sbatch" | awk '{print $4}')"
   else
-    visualize_job="$(sbatch --dependency=afterok:${train_job} "${PROJECT_ROOT}/scripts/submit_visualize.sbatch" | awk '{print $4}')"
+    visualize_job="$(sbatch "${SBATCH_ARGS[@]}" --dependency=afterok:${train_job} "${PROJECT_ROOT}/scripts/submit_visualize.sbatch" | awk '{print $4}')"
   fi
   echo "Submitted visualize job ${visualize_job}"
 fi

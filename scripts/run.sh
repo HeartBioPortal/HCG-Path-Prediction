@@ -12,6 +12,22 @@ if [ -f "${PROJECT_ROOT}/configs/paths.env" ]; then
   set +a
 fi
 
+build_sbatch_args() {
+  local args=()
+  local account="${SBATCH_ACCOUNT:-${SLURM_ACCOUNT:-}}"
+  local partition="${SBATCH_PARTITION:-${SLURM_PARTITION:-}}"
+
+  if [ -n "${account}" ]; then
+    args+=(--account "${account}")
+  fi
+
+  if [ -n "${partition}" ]; then
+    args+=(--partition "${partition}")
+  fi
+
+  printf '%s\n' "${args[@]}"
+}
+
 choose_mode() {
   case "${MODE}" in
     sbatch|local)
@@ -54,15 +70,22 @@ run_local() {
 }
 
 run_sbatch() {
+  local sbatch_args=()
+  while IFS= read -r line; do
+    if [ -n "${line}" ]; then
+      sbatch_args+=("${line}")
+    fi
+  done < <(build_sbatch_args)
+
   case "${JOB}" in
     train)
-      exec sbatch "${PROJECT_ROOT}/scripts/submit_train.sbatch" "$@"
+      exec sbatch "${sbatch_args[@]}" "${PROJECT_ROOT}/scripts/submit_train.sbatch" "$@"
       ;;
     predict)
-      exec sbatch "${PROJECT_ROOT}/scripts/submit_predict.sbatch" "$@"
+      exec sbatch "${sbatch_args[@]}" "${PROJECT_ROOT}/scripts/submit_predict.sbatch" "$@"
       ;;
     visualize)
-      exec sbatch "${PROJECT_ROOT}/scripts/submit_visualize.sbatch" "$@"
+      exec sbatch "${sbatch_args[@]}" "${PROJECT_ROOT}/scripts/submit_visualize.sbatch" "$@"
       ;;
     pipeline)
       exec bash "${PROJECT_ROOT}/scripts/submit_pipeline.sh" "$@"

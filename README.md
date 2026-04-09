@@ -182,3 +182,11 @@ When `sbatch` is available, these wrappers default to Slurm submission instead o
 ```bash
 RUN_MODE=local bash scripts/run_train.sh
 ```
+
+On IU HPC, set your RT project account before using the sbatch-first wrappers:
+
+```bash
+export SBATCH_ACCOUNT=r01806
+```
+
+You can also store that value in `configs/paths.env`.
