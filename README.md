@@ -93,6 +93,7 @@ PREDICTION_OUTPUT_DIR_HPC=/N/u/kvand/BigRed200/HCG-Path-Prediction/outputs/cvd_a
 VIS_OUTPUT_DIR_HPC=/N/u/kvand/BigRed200/HCG-Path-Prediction/outputs/cvd_assoc/visualizations
 LOG_DIR_HPC=/N/scratch/kvand/hbp/logs/datahub
 ENV_MANAGER=venv
+VENV_PATH=/N/u/kvand/BigRed200/HCG-Path-Prediction/.venv
 BIOPATHNET_INSTALL_MODE=cpu
 BIOPATHNET_GPUS=null
 BIOPATHNET_BATCH_SIZE=4
@@ -133,7 +134,7 @@ Submit the full dependent pipeline:
 bash scripts/run_pipeline.sh
 ```
 
-The canonical `run_*` wrappers default to `sbatch` on HPC and can pass through account, CPU, memory, time, output, error, partition, QOS, and GPU flags from `.env` or `configs/paths.env`. The pipeline wrapper can optionally preprocess first, then submit train, predict, and visualization jobs using Slurm dependencies.
+The canonical `run_*` wrappers default to `sbatch` on HPC and can pass through account, CPU, memory, time, output, error, partition, QOS, and GPU flags from `.env` or `configs/paths.env`. The Slurm job scripts now also honor `ENV_MANAGER=venv` with `VENV_PATH`, so they no longer assume Conda is installed on the compute nodes. The pipeline wrapper can optionally preprocess first, then submit train, predict, and visualization jobs using Slurm dependencies.
 
 ## Data files and BioPathNet semantics
 

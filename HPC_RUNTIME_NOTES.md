@@ -38,6 +38,13 @@ Use the runtime bootstrapper:
 ENV_MANAGER=venv BIOPATHNET_INSTALL_MODE=cpu bash scripts/setup_runtime_env.sh
 ```
 
+The Slurm job scripts use the same environment selection logic. For a repo-local venv on HPC, keep:
+
+```bash
+ENV_MANAGER=venv
+VENV_PATH=/N/u/kvand/BigRed200/HCG-Path-Prediction/.venv
+```
+
 For GPU installs:
 
 ```bash

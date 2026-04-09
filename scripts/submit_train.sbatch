@@ -15,6 +15,8 @@ PROJECT_ROOT="${PROJECT_ROOT_HPC:-$PWD}"
 # shellcheck disable=SC1091
 . "${PROJECT_ROOT}/scripts/load_project_env.sh"
 load_project_env "${PROJECT_ROOT}"
+# shellcheck disable=SC1091
+. "${PROJECT_ROOT}/scripts/activate_runtime_env.sh"
 DATASET_DIR="${DATASET_DIR_HPC:-$PROJECT_ROOT/data/processed/cvd_guidelines_assoc}"
 OUTPUT_DIR="${OUTPUT_DIR_HPC:-$PROJECT_ROOT/outputs/cvd_assoc/checkpoints}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-biopathnet}"
@@ -22,10 +24,10 @@ BIOPATHNET_GPUS="${BIOPATHNET_GPUS:-null}"
 BIOPATHNET_BATCH_SIZE="${BIOPATHNET_BATCH_SIZE:-4}"
 BIOPATHNET_NUM_EPOCHS="${BIOPATHNET_NUM_EPOCHS:-5}"
 BIOPATHNET_SEED="${BIOPATHNET_SEED:-1024}"
+VENV_PATH="${VENV_PATH:-${PROJECT_ROOT}/.venv}"
 
 mkdir -p "$PROJECT_ROOT/logs/slurm" "$OUTPUT_DIR"
-source "$(conda info --base)/etc/profile.d/conda.sh"
-conda activate "$CONDA_ENV_NAME"
+activate_runtime_env "${PROJECT_ROOT}"
 cd "$PROJECT_ROOT"
 
 COMMAND=(
