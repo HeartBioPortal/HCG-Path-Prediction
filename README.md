@@ -74,7 +74,44 @@ The local run scripts default to CPU mode with `--gpus null`. Set `BIOPATHNET_GP
 
 ## HPC workflow
 
-Optional path and remote values can be stored in [configs/paths.example.env](/Users/kvand/Documents/B528-class/project/configs/paths.example.env) by creating a local `configs/paths.env` file with cluster-specific values.
+Copy the committed environment template first:
+
+```bash
+cp .env.example .env
+```
+
+The project scripts load `.env` first and then `configs/paths.env` if it exists, so you can either keep everything in `.env` or use `configs/paths.env` for local machine-specific overrides. A second template also exists at [configs/paths.example.env](/Users/kvand/Documents/B528-class/project/configs/paths.example.env).
+
+Recommended IU HPC variables:
+
+```bash
+PROJECT_ROOT_HPC=/N/u/kvand/BigRed200/HCG-Path-Prediction
+RAW_GRAPH_DIR_HPC=/N/u/kvand/BigRed200/HCG-Path-Prediction/data/raw/guidelines_graph
+DATASET_DIR_HPC=/N/u/kvand/BigRed200/HCG-Path-Prediction/data/processed/cvd_guidelines_assoc
+OUTPUT_DIR_HPC=/N/u/kvand/BigRed200/HCG-Path-Prediction/outputs/cvd_assoc/checkpoints
+PREDICTION_OUTPUT_DIR_HPC=/N/u/kvand/BigRed200/HCG-Path-Prediction/outputs/cvd_assoc/predictions
+VIS_OUTPUT_DIR_HPC=/N/u/kvand/BigRed200/HCG-Path-Prediction/outputs/cvd_assoc/visualizations
+LOG_DIR_HPC=/N/scratch/kvand/hbp/logs/datahub
+ENV_MANAGER=venv
+BIOPATHNET_INSTALL_MODE=cpu
+BIOPATHNET_GPUS=null
+BIOPATHNET_BATCH_SIZE=4
+BIOPATHNET_NUM_EPOCHS=5
+BIOPATHNET_SEED=1024
+SBATCH_ACCOUNT=r01806
+SBATCH_CPUS_PER_TASK=4
+SBATCH_MEM=48G
+SBATCH_TIME=12:00:00
+SBATCH_OUTPUT=/N/scratch/kvand/hbp/logs/datahub/cvd_train_%j.out
+SBATCH_ERROR=/N/scratch/kvand/hbp/logs/datahub/cvd_train_%j.err
+```
+
+For GPU submission, opt in explicitly:
+
+```bash
+SBATCH_GRES=gpu:1
+BIOPATHNET_GPUS='[0]'
+```
 
 Sync the repo to HPC:
 
@@ -86,17 +123,17 @@ On the cluster:
 
 ```bash
 cd <PROJECT_ROOT_HPC>
-bash scripts/setup_hpc_env.sh
-sbatch scripts/submit_train.sbatch
+bash scripts/setup_runtime_env.sh
+bash scripts/run_train.sh
 ```
 
 Submit the full dependent pipeline:
 
 ```bash
-bash scripts/submit_pipeline.sh
+bash scripts/run_pipeline.sh
 ```
 
-The pipeline wrapper can optionally preprocess first, then submit train, predict, and visualization jobs using Slurm dependencies.
+The canonical `run_*` wrappers default to `sbatch` on HPC and can pass through account, CPU, memory, time, output, error, partition, QOS, and GPU flags from `.env` or `configs/paths.env`. The pipeline wrapper can optionally preprocess first, then submit train, predict, and visualization jobs using Slurm dependencies.
 
 ## Data files and BioPathNet semantics
 

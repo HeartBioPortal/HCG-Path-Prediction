@@ -9,11 +9,9 @@ TORCH_WHL_URL="${TORCH_WHL_URL:-https://download.pytorch.org/whl/torch_stable.ht
 PYG_WHL_URL="${PYG_WHL_URL:-https://data.pyg.org/whl/torch-2.0.1+cu118.html}"
 TORCHDRUG_DIR="${TORCHDRUG_DIR:-${PROJECT_ROOT}/third_party/torchdrug}"
 
-if [ -f "${PROJECT_ROOT}/configs/paths.env" ]; then
-  set -a
-  . "${PROJECT_ROOT}/configs/paths.env"
-  set +a
-fi
+# shellcheck disable=SC1091
+. "${PROJECT_ROOT}/scripts/load_project_env.sh"
+load_project_env "${PROJECT_ROOT}"
 
 if [ -n "${HPC_MODULES:-}" ]; then
   for module_name in ${HPC_MODULES}; do

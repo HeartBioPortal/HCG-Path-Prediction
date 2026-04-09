@@ -9,6 +9,7 @@ venv/
 *.pyc
 *.pyo
 *.swp
+.env
 
 configs/paths.env
 third_party/BioPathNet/.git/

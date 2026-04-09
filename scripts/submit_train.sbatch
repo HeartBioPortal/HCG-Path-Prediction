@@ -12,6 +12,9 @@
 set -euo pipefail
 
 PROJECT_ROOT="${PROJECT_ROOT_HPC:-$PWD}"
+# shellcheck disable=SC1091
+. "${PROJECT_ROOT}/scripts/load_project_env.sh"
+load_project_env "${PROJECT_ROOT}"
 DATASET_DIR="${DATASET_DIR_HPC:-$PROJECT_ROOT/data/processed/cvd_guidelines_assoc}"
 OUTPUT_DIR="${OUTPUT_DIR_HPC:-$PROJECT_ROOT/outputs/cvd_assoc/checkpoints}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-biopathnet}"

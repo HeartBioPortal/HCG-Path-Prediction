@@ -24,6 +24,14 @@ python -m pip install --force-reinstall "setuptools<82"
 
 ## Reproducible setup
 
+Copy the committed environment template first:
+
+```bash
+cp .env.example .env
+```
+
+The scripts load `.env` first and then `configs/paths.env` if it exists, so either file works. Use `.env` as the main committed-friendly template and `configs/paths.env` for local overrides if you want them.
+
 Use the runtime bootstrapper:
 
 ```bash

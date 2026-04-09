@@ -14,11 +14,9 @@ PYG_WHL_URL_GPU="${PYG_WHL_URL_GPU:-https://data.pyg.org/whl/torch-2.0.1+cu118.h
 PYG_WHL_URL_CPU="${PYG_WHL_URL_CPU:-https://data.pyg.org/whl/torch-2.0.1+cpu.html}"
 TORCHDRUG_DIR="${TORCHDRUG_DIR:-${PROJECT_ROOT}/third_party/torchdrug}"
 
-if [ -f "${PROJECT_ROOT}/configs/paths.env" ]; then
-  set -a
-  . "${PROJECT_ROOT}/configs/paths.env"
-  set +a
-fi
+# shellcheck disable=SC1091
+. "${PROJECT_ROOT}/scripts/load_project_env.sh"
+load_project_env "${PROJECT_ROOT}"
 
 if [ -n "${HPC_MODULES:-}" ]; then
   for module_name in ${HPC_MODULES}; do

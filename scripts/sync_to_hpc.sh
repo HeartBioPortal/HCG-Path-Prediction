@@ -2,11 +2,9 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-if [ -f "${PROJECT_ROOT}/configs/paths.env" ]; then
-  set -a
-  . "${PROJECT_ROOT}/configs/paths.env"
-  set +a
-fi
+# shellcheck disable=SC1091
+. "${PROJECT_ROOT}/scripts/load_project_env.sh"
+load_project_env "${PROJECT_ROOT}"
 
 : "${HPC_REMOTE:?Set HPC_REMOTE in the environment or configs/paths.env}"
 : "${PROJECT_ROOT_HPC:?Set PROJECT_ROOT_HPC in the environment or configs/paths.env}"
