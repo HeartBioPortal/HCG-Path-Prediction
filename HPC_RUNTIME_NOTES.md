@@ -96,6 +96,21 @@ export SBATCH_GRES=gpu:1
 export BIOPATHNET_GPUS='[0]'
 ```
 
+## Visualization runtime
+
+BioPathNet visualization is path explanation, not a normal static plot. It runs beam search over the graph for each query in `test_vis.txt`, and the original text-only explanation pass can run for hours on CPU before producing HTML/JSON files.
+
+The project wrapper now defaults to a practical graph-only run:
+
+```bash
+BIOPATHNET_VISUALIZE_TEXT=0
+BIOPATHNET_VISUALIZE_GRAPH=1
+BIOPATHNET_VIS_BATCH_SIZE=1
+BIOPATHNET_VIS_TEST_LIMIT=3
+```
+
+This should produce a few `.html` and `.json` artifacts quickly enough to verify the workflow. Set `BIOPATHNET_VIS_TEST_LIMIT=0` or `all` only for an exhaustive run. Set `BIOPATHNET_VISUALIZE_TEXT=1` only if you also want text path explanations in `log.txt`.
+
 ## Verification
 
 ```bash

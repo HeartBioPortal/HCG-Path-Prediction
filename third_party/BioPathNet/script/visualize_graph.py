@@ -294,18 +294,23 @@ if __name__ == "__main__":
     entity_vocab, relation_vocab = load_vocab(_dataset)
     task = solver.model
     task.eval()
-    for i in range(-(-len(test_set) // solver.batch_size)):  # for number of batches
+    num_batches = -(-len(test_set) // solver.batch_size)
+    logger.warning("Starting graph visualization for %d samples across %d batches" % (len(test_set), num_batches))
+    for i in range(num_batches):  # for number of batches
         start = i * solver.batch_size
         end = min(start + solver.batch_size, len(test_set))  # make sure we don't go out of bounds
+        logger.warning("Graph visualization batch %d / %d: samples %d-%d" % (i + 1, num_batches, start, end - 1))
         batch_samples = [test_set[j] for j in range(start, end)]
         batch = data.graph_collate(batch_samples)
-        batch = torchdrug.utils.cuda(batch)
+        if solver.device.type == "cuda":
+            batch = torchdrug.utils.cuda(batch, device=solver.device)
         with torch.no_grad():
             pred, (mask, target) = task.predict_and_target(batch)
         pos_pred = pred.gather(-1, target.unsqueeze(-1))
         ranking = torch.sum((pos_pred <= pred) & mask, dim=-1) + 1
 
         for j in range(len(batch_samples)):
+            logger.warning("Graph visualization sample %d / %d direction=forward" % (start + j + 1, len(test_set)))
             sample = batch[[j]]
             h, t, r = sample.squeeze(0).tolist()
             if not (0 <= h < task.fact_graph.num_node and 
@@ -331,6 +336,9 @@ if __name__ == "__main__":
                 if paths:
                     visualize_echarts(task.fact_graph, sample, paths, weights, entity_vocab, relation_vocab,
                                           ranking[j, 0], save_file, node_colors_dict=node_colors_dict)
+                    logger.warning("Saved %s" % save_file)
+                else:
+                    logger.warning("No forward paths found for %s" % save_file)
 
 #            entity = re.search(r"(.+) \(Q\d+\)", entity_vocab[t]).groups()[0]
             entity = entity_vocab[h].replace(" ", "")
@@ -340,8 +348,11 @@ if __name__ == "__main__":
             sample[:, 2] += task.num_relation
             if not os.path.exists(save_file):
             #if ranking[j, 1] <= 10 and not os.path.exists(save_file):
+                logger.warning("Graph visualization sample %d / %d direction=reverse" % (start + j + 1, len(test_set)))
                 paths, weights = task.visualize(sample)
                 if paths:
                     visualize_echarts(task.fact_graph, sample, paths, weights, entity_vocab, 
                                           relation_vocab, ranking[j, 1], save_file, node_colors_dict=node_colors_dict)
-
+                    logger.warning("Saved %s" % save_file)
+                else:
+                    logger.warning("No reverse paths found for %s" % save_file)

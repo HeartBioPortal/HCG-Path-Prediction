@@ -127,5 +127,7 @@ if __name__ == "__main__":
         
     entity_vocab, relation_vocab = load_vocab(_dataset)
 
+    logger.warning("Starting text path visualization for %d samples" % len(solver.test_set))
     for i in range(len(solver.test_set)):
+        logger.warning("Text path visualization sample %d / %d" % (i + 1, len(solver.test_set)))
         visualize_path(solver, solver.test_set[i], entity_vocab, relation_vocab)

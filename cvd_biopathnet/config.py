@@ -23,6 +23,8 @@ task:
     layer_norm: yes
     dependent: yes
     symmetric: no
+    num_beam: 3
+    path_topk: 3
   criterion: bce
   num_negative: 32
   strict_negative: yes
@@ -111,6 +113,10 @@ BIOPATHNET_GPUS=null
 BIOPATHNET_BATCH_SIZE=4
 BIOPATHNET_NUM_EPOCHS=5
 BIOPATHNET_SEED=1024
+BIOPATHNET_VIS_BATCH_SIZE=1
+BIOPATHNET_VIS_TEST_LIMIT=3
+BIOPATHNET_VISUALIZE_TEXT=0
+BIOPATHNET_VISUALIZE_GRAPH=1
 OMP_NUM_THREADS=1
 MKL_NUM_THREADS=1
 TORCH_EXTENSIONS_DIR=/path/to/hpc/scratch/torch_extensions

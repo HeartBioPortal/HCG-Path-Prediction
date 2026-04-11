@@ -99,6 +99,10 @@ BIOPATHNET_GPUS=null
 BIOPATHNET_BATCH_SIZE=4
 BIOPATHNET_NUM_EPOCHS=5
 BIOPATHNET_SEED=1024
+BIOPATHNET_VIS_BATCH_SIZE=1
+BIOPATHNET_VIS_TEST_LIMIT=3
+BIOPATHNET_VISUALIZE_TEXT=0
+BIOPATHNET_VISUALIZE_GRAPH=1
 OMP_NUM_THREADS=1
 MKL_NUM_THREADS=1
 TORCH_EXTENSIONS_DIR=/N/scratch/kvand/hbp/torch_extensions
@@ -146,6 +150,8 @@ For CPU smoke runs, the runtime activation layer now also honors:
 - `MKL_NUM_THREADS`
 - `TORCH_EXTENSIONS_DIR`
 - `BIOPATHNET_CLEAR_TORCH_EXTENSIONS`
+
+Visualization is intentionally limited by default because BioPathNet path explanation uses beam search over the graph and can be much slower than prediction. The wrapper skips the text-only explanation pass unless `BIOPATHNET_VISUALIZE_TEXT=1`, runs the HTML/JSON graph pass by default with `BIOPATHNET_VISUALIZE_GRAPH=1`, uses `BIOPATHNET_VIS_BATCH_SIZE=1`, and limits `test_vis.txt` to the first `BIOPATHNET_VIS_TEST_LIMIT=3` rows. Set `BIOPATHNET_VIS_TEST_LIMIT=0` or `all` only if you really want every visualization query.
 
 ## Data files and BioPathNet semantics
 
@@ -203,6 +209,7 @@ python3 -m cvd_biopathnet.cli build-slurm --job visualize --output scripts/submi
 - `torchdrug` / PyG install failures on HPC: use [scripts/setup_runtime_env.sh](/Users/kvand/Documents/B528-class/project/scripts/setup_runtime_env.sh) and adjust `HPC_MODULES`, CUDA wheel URLs, or `BIOPATHNET_INSTALL_MODE=cpu`.
 - Slurm account or partition errors: uncomment and edit the optional `#SBATCH` lines in the batch templates for your cluster.
 - Training loads the dataset but stays at `Epoch 0 begin`: this is a known NBFNet symptom of a broken Torch JIT cache. Set `BIOPATHNET_CLEAR_TORCH_EXTENSIONS=1`, keep `TORCH_EXTENSIONS_DIR` on scratch if possible, and rerun a 1-epoch smoke test.
+- Visualization runs for hours with only `log.txt`: cancel it, pull the latest repo, and rerun with the default graph-only limited settings. The text-only path pass can be much slower than the HTML/JSON graph output and is now opt-in via `BIOPATHNET_VISUALIZE_TEXT=1`.
 - Raw-format detection errors: ensure the input directory contains a supported schema with node IDs, node types, edge sources, edge targets, and edge relations.
 
 
