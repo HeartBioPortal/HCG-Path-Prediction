@@ -1,0 +1,28 @@
+#CPATH2: PC version 14 21 May 2024
+#Columns:	ID	DESCRIPTION	TYPE	HOMEPAGE	PATHWAYS	INTERACTIONS	PARTICIPANTS
+pc14:chebi	ChEBI Ontology v233, 27-Apr-2024	WAREHOUSE	https://www.ebi.ac.uk/chebi/	0	0	0
+pc14:uniprot.human	UniProtKB/Swiss-Prot (human), release 2024_02	WAREHOUSE	https://www.uniprot.org	0	0	0
+pc14:unichem.mapping	Selected whole-source id-mapping files (to ChEBI) from UniChem, 13-May-2024	MAPPING	https://www.ebi.ac.uk/unichem/	0	0	0
+pc14:reactome	Reactome v88 (only 'Homo_sapiens.owl') 20-Mar-2024	BIOPAX	https://www.reactome.org	2698	23911	56948
+pc14:pid	NCI Curated Human Pathways from PID (final); 27-Jul-2015	BIOPAX	https://en.wikipedia.org/wiki/NCI-Nature_Pathway_Interaction_Database	745	16017	10931
+pc14:psp	PhosphoSite Kinase-substrate information; 16-Apr-2024	BIOPAX	https://www.phosphosite.org	0	38998	21251
+pc14:humancyc	HumanCyc 27.5; 2023; under license from SRI International, www.biocyc.org	BIOPAX	https://humancyc.org	358	7182	6177
+pc14:hprd	HPRD PSI-MI Release 9; 13-Apr-2010	PSI_MI	http://www.hprd.org	0	39864	83555
+pc14:panther	PANTHER Pathways 3.6.7 on 01-Aug-2023 (auto-converted to human-only model)	BIOPAX	https://www.pantherdb.org	297	6000	8836
+pc14:dip	DIP (human - converted Hsapi20170205.mif25.gz to BioPAX), 05-Feb-2017	PSI_MI	https://dip.doe-mbi.ucla.edu	0	9025	20477
+pc14:biogrid	BioGRID Release 4.4.227 (only BIOGRID-ORGANISM-Homo_sapiens-4.4.227.psi25.xml), 25-Oct-2023	PSI_MI	https://thebiogrid.org/	0	1184833	2369666
+pc14:intact	IntAct (human), except 'negative', 06-Oct-2023	PSI_MI	https://www.ebi.ac.uk/intact/	0	440170	1208042
+pc14:intact.complex	IntAct Complex (human), 06-Oct-2023	PSI_MI	https://www.ebi.ac.uk/intact/	0	0	10141
+pc14:bind	BIND (human), 15-Dec-2010	PSI_MI	https://en.wikipedia.org/wiki/Biomolecular_Object_Network_Databank#Biomolecular_Interaction_Network_Database_(BIND)	0	35450	87242
+pc14:corum	CORUM 3.0 (human complexes), 03-Sep-2018	PSI_MI	https://mips.helmholtz-muenchen.de/genre/proj/corum/	0	0	10406
+pc14:msigdb	MSigDB v5.2 (XML), human C3 TFT motif gene sets, 09-2016; converted with http://github.com/PathwayCommons/msigdb-to-biopax	BIOPAX	http://software.broadinstitute.org/gsea/msigdb/	0	252050	12307
+pc14:mirtarbase	Human miRNA-target gene relationships from MiRTarBase; v7.0, 15-SEP-2017, converted in Apr-2018 with http://github.com/PathwayCommons/mirtarbase-to-biopax	BIOPAX	http://mirtarbase.mbc.nctu.edu.tw/	0	395703	17663
+pc14:drugbank	DrugBank v5.1.11, 03-Jan-2024, converted to BioPAX with our http://github.com/PathwayCommons/drugbank-to-biopax	BIOPAX	http://www.drugbank.ca/	0	24367	26415
+pc14:reconx	Recon X: Reconstruction of the Human Genome; SBML model from BioModels, Recon 2 v2.02 (2013), converted to BioPAX by us using http://github.com/PathwayCommons/reconx-to-biopax library.	BIOPAX	http://humanmetabolism.org/	0	10910	8908
+pc14:ctd	Curated chemical-gene interactions from Comparative Toxicogenomics Database, MDI Biological Laboratory, and NC State University; 28-Feb-2024; converted with http://github.com/PathwayCommons/ctd-to-biopax	BIOPAX	http://ctdbase.org/	0	1045297	110177
+pc14:kegg	KEGG 07/2011 (only human, hsa* files), converted to BioPAX by BioModels (http://www.ebi.ac.uk/biomodels-main/) team	BIOPAX	https://www.genome.jp/kegg/	122	3568	3536
+pc14:inoh	INOH 4.0 (signal transduction and metabolic data), 22-MAR-2011, archive	BIOPAX	http://inoh.hgc.jp	774	5625	22799
+pc14:netpath	NetPath 12/2011	BIOPAX	http://www.netpath.org	27	7214	5337
+pc14:pathbank	Pathbank 2.0 BioPAX data (primary pathways, human data only), 16-Aug-2019	BIOPAX	http://pathbank.org	1295	5291	6614
+pc14:innatedb	InnateDB Curated Interactions (human) 2017-06-18 (downloaded 2023-02-10)	PSI_MITAB	https://www.innatedb.ca	0	26173	59245
+pc14:biofactoid	Biofactoid BioPAX data, 2024-05-13	BIOPAX	https://biofactoid.org	376	1688	1862

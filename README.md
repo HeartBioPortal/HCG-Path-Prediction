@@ -16,6 +16,7 @@ All other relations are exported into `train1.txt` as the BioPathNet background 
 - A normalization pipeline for entity IDs, relation names, deduplication, and task extraction.
 - BioPathNet dataset export with `train1`, `train2`, `valid`, `test`, `test_vis`, `entity_types`, `entity_names`, `node_colors_dict`, and `metadata`.
 - Validation tooling for duplicate checks, split overlap checks, exported entity map checks, and target-schema checks.
+- A downloaded external BRG candidate from Pathway Commons at [data/raw/brg/pathway_commons_pc2_v14](/Users/kvand/Documents/B528-class/project/data/raw/brg/pathway_commons_pc2_v14).
 - Rendered BioPathNet config templates in [configs/cvd_assoc_run.yaml](/Users/kvand/Documents/B528-class/project/configs/cvd_assoc_run.yaml) and [configs/cvd_assoc_vis.yaml](/Users/kvand/Documents/B528-class/project/configs/cvd_assoc_vis.yaml).
 - Local run scripts, Slurm batch scripts, laptop-to-HPC sync scripts, and a small prediction-inspection notebook.
 - Vendored upstream BioPathNet code in [third_party/BioPathNet](/Users/kvand/Documents/B528-class/project/third_party/BioPathNet).
@@ -166,6 +167,16 @@ Visualization is intentionally limited by default because BioPathNet path explan
 - `metadata.json`: source files, format, counts, split seed, target relation, and export metadata.
 
 The exported entity IDs are namespaced and type-aware, for example `GENE:SCN5A` and `CONDITION:c4a2be2e451c52d3`.
+
+## External BRG candidate
+
+The current best-fit external BRG candidate for this project is Pathway Commons PC2 v14, downloaded in HGNC SIF form at [data/raw/brg/pathway_commons_pc2_v14](/Users/kvand/Documents/B528-class/project/data/raw/brg/pathway_commons_pc2_v14). This is the graph I would start with because it closely matches the BRG role described in BioPathNet and integrates pathway / interaction sources such as Reactome, PhosphoSite, BioGRID, IntAct, DrugBank, and others.
+
+The raw file is:
+
+- [data/raw/brg/pathway_commons_pc2_v14/pc-hgnc.sif.gz](/Users/kvand/Documents/B528-class/project/data/raw/brg/pathway_commons_pc2_v14/pc-hgnc.sif.gz)
+
+Before using it in `train1.txt`, we should map identifiers into the project namespace and filter any edges that could leak direct target supervision.
 
 ## Pilot and full mode
 
