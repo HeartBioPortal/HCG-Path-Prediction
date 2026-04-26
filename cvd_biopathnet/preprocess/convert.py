@@ -5,6 +5,7 @@ import random
 
 from cvd_biopathnet.io.load_graph import load_graph, summarize_raw_graph
 from cvd_biopathnet.models import ConversionArtifacts, EdgeRecord, NormalizedGraph
+from cvd_biopathnet.preprocess.external_brg import merge_pathway_commons_brg
 from cvd_biopathnet.preprocess.export_biopathnet import export_dataset
 from cvd_biopathnet.preprocess.normalize import (
     extract_task_edges,
@@ -28,6 +29,7 @@ def convert_to_biopathnet(
     pilot_background_limit: int | None,
     excluded_relations: list[str] | None = None,
     remove_self_loops: bool = False,
+    external_brg_sif: Path | None = None,
 ) -> ConversionArtifacts:
     raw_graph = load_graph(input_path)
     normalized_graph = normalize_graph(
@@ -41,6 +43,13 @@ def convert_to_biopathnet(
         normalized_graph,
         target_relation=target_relation,
     )
+    external_brg_summary: dict[str, int | str] | None = None
+    if external_brg_sif is not None:
+        background_edges, external_brg_summary = merge_pathway_commons_brg(
+            graph=normalized_graph,
+            background_edges=background_edges,
+            sif_path=external_brg_sif,
+        )
     if not target_edges:
         raise ValueError(
             f"No target edges found for relation {normalize_relation(target_relation)} with schema "
@@ -67,6 +76,7 @@ def convert_to_biopathnet(
         "mode": mode,
         "pilot_target_limit": pilot_target_limit if mode == "pilot" else None,
         "pilot_background_limit": pilot_background_limit if mode == "pilot" else None,
+        "external_brg": external_brg_summary,
     }
 
     metadata = export_dataset(
@@ -88,6 +98,7 @@ def convert_to_biopathnet(
         extra_metadata={
             "duplicates_removed": normalized_graph.duplicates_removed,
             "skipped_edges": normalized_graph.skipped_edges,
+            "external_brg": external_brg_summary,
         },
     )
     validation_report = validate_dataset(output_dir, write_report=True)

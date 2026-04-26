@@ -135,7 +135,34 @@ def merge_with_entity_vocab(df, dataset, entity_vocab, relation_vocab):
 
     df = pd.merge(df, lookup, how="left", left_on="query_node", right_on="short", sort=False)
     df = pd.merge(df, lookup, how="left", left_on="pred_node", right_on="short", sort=False)
+    df = df.rename(columns={
+        "long_x": "query_name",
+        "long_y": "pred_name",
+        "short_x": "query_short",
+        "short_y": "pred_short",
+    })
     return df
+
+
+def build_topk_summary(df, k=3):
+    summary = df.copy()
+    summary = summary.sort_values(
+        ["query_node", "query_relation", "prediction_score"],
+        ascending=[True, True, False],
+    )
+    summary["rank"] = summary.groupby(["query_node", "query_relation"]).cumcount() + 1
+    summary = summary[summary["rank"] <= k]
+    columns = [
+        "query_node",
+        "query_name",
+        "query_relation",
+        "pred_node",
+        "pred_name",
+        "prediction_score",
+        "rank",
+    ]
+    available_columns = [column for column in columns if column in summary.columns]
+    return summary[available_columns]
 
         
 if __name__ == "__main__":
@@ -180,7 +207,10 @@ if __name__ == "__main__":
     print("Predictions done")
     df = merge_with_entity_vocab(df, _dataset, entity_vocab, relation_vocab)
     df = df.sort_values(['query_node','query_relation', 'prediction_score'], ascending=[True, False,False])
+    top3_df = build_topk_summary(df, k=3)
     logger.warning("Link prediction done")
     logger.warning("Saving to file")
     print(os.path.join(working_dir, "predictions.csv"))
     df.to_csv(os.path.join( working_dir, "predictions.csv"), index=False, sep="\t")
+    print(os.path.join(working_dir, "predictions_top3.tsv"))
+    top3_df.to_csv(os.path.join(working_dir, "predictions_top3.tsv"), index=False, sep="\t")

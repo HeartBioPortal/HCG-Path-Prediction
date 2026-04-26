@@ -55,6 +55,25 @@ Validate the exported dataset:
 python3 -m cvd_biopathnet.cli validate-dataset --dataset-dir data/processed/cvd_guidelines_assoc
 ```
 
+Convert with the downloaded Pathway Commons BRG merged into `train1.txt`:
+
+```bash
+python3 -m cvd_biopathnet.cli convert \
+  --input data/raw/guidelines_graph \
+  --output data/processed/cvd_guidelines_assoc_pc14 \
+  --reports-dir data/reports/pathway_commons_pc14 \
+  --target-relation ASSOCIATED_WITH_CONDITION \
+  --seed 42 \
+  --mode full \
+  --external-brg-sif data/raw/brg/pathway_commons_pc2_v14/pc-hgnc.sif.gz
+```
+
+Or use the helper wrapper:
+
+```bash
+bash scripts/rebuild_dataset_with_pathway_commons_brg.sh
+```
+
 Render the BioPathNet config templates:
 
 ```bash
@@ -137,6 +156,19 @@ bash scripts/setup_runtime_env.sh
 bash scripts/run_train.sh
 ```
 
+To rebuild the dataset with the downloaded Pathway Commons BRG on HPC:
+
+```bash
+cd <PROJECT_ROOT_HPC>
+bash scripts/rebuild_dataset_with_pathway_commons_brg.sh
+```
+
+Then point training and prediction at the new dataset directory, for example by exporting:
+
+```bash
+export DATASET_DIR_HPC=/N/u/kvand/BigRed200/HCG-Path-Prediction/data/processed/cvd_guidelines_assoc_pc14
+```
+
 Submit the full dependent pipeline:
 
 ```bash
@@ -176,7 +208,7 @@ The raw file is:
 
 - [data/raw/brg/pathway_commons_pc2_v14/pc-hgnc.sif.gz](/Users/kvand/Documents/B528-class/project/data/raw/brg/pathway_commons_pc2_v14/pc-hgnc.sif.gz)
 
-Before using it in `train1.txt`, we should map identifiers into the project namespace and filter any edges that could leak direct target supervision.
+The conversion pipeline now supports merging this SIF file into `train1.txt`. The current implementation keeps Pathway Commons edges only when both endpoints map to genes already present in the project graph, which keeps the BRG scientifically relevant and computationally tractable for reruns.
 
 ## Pilot and full mode
 
@@ -217,6 +249,7 @@ python3 -m cvd_biopathnet.cli build-slurm --job visualize --output scripts/submi
 
 - `ModuleNotFoundError: cvd_biopathnet`: install the project with `python3 -m pip install -e .`, or run from the repo root after installation.
 - `No checkpoint found`: run training first, or set `CHECKPOINT_PATH` before prediction / visualization.
+- Prediction output now includes both `predictions.csv` and a concise `predictions_top3.tsv` summary with the top 3 hits per query.
 - `torchdrug` / PyG install failures on HPC: use [scripts/setup_runtime_env.sh](/Users/kvand/Documents/B528-class/project/scripts/setup_runtime_env.sh) and adjust `HPC_MODULES`, CUDA wheel URLs, or `BIOPATHNET_INSTALL_MODE=cpu`.
 - Slurm account or partition errors: uncomment and edit the optional `#SBATCH` lines in the batch templates for your cluster.
 - Training loads the dataset but stays at `Epoch 0 begin`: this is a known NBFNet symptom of a broken Torch JIT cache. Set `BIOPATHNET_CLEAR_TORCH_EXTENSIONS=1`, keep `TORCH_EXTENSIONS_DIR` on scratch if possible, and rerun a 1-epoch smoke test.

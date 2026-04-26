@@ -30,6 +30,12 @@ def build_parser() -> argparse.ArgumentParser:
     convert_parser.add_argument("--pilot-background-limit", type=int, default=None)
     convert_parser.add_argument("--exclude-relation", action="append", default=[])
     convert_parser.add_argument("--remove-self-loops", action="store_true")
+    convert_parser.add_argument(
+        "--external-brg-sif",
+        type=Path,
+        default=None,
+        help="Optional Pathway Commons-style SIF file to merge into train1 / BRG.",
+    )
 
     validate_parser = subparsers.add_parser("validate-dataset", help="Validate exported dataset files")
     validate_parser.add_argument("--dataset-dir", required=True, type=Path)
@@ -72,6 +78,7 @@ def main() -> None:
             pilot_background_limit=args.pilot_background_limit,
             excluded_relations=args.exclude_relation,
             remove_self_loops=args.remove_self_loops,
+            external_brg_sif=args.external_brg_sif,
         )
         print(json.dumps(result.validation_report, indent=2, sort_keys=True))
         return
