@@ -40,6 +40,18 @@ DATASET_MODE="${DATASET_MODE:-full}"
 SPLIT_SEED="${SPLIT_SEED:-42}"
 PILOT_TARGET_LIMIT="${PILOT_TARGET_LIMIT:-256}"
 PILOT_BACKGROUND_LIMIT="${PILOT_BACKGROUND_LIMIT:-2000}"
+BACKGROUND_NODE_TYPES="${BACKGROUND_NODE_TYPES:-Gene,Drug,Condition,Biomarker}"
+
+background_type_args=()
+if [ -n "${BACKGROUND_NODE_TYPES}" ]; then
+  IFS=',' read -r -a background_type_array <<< "${BACKGROUND_NODE_TYPES}"
+  for node_type in "${background_type_array[@]}"; do
+    node_type="$(echo "${node_type}" | xargs)"
+    if [ -n "${node_type}" ]; then
+      background_type_args+=(--background-node-type "${node_type}")
+    fi
+  done
+fi
 
 echo "Rebuilding dataset with Pathway Commons BRG"
 echo "  scope: ${CURRENT_SCOPE}"
@@ -48,6 +60,7 @@ echo "  external BRG: ${EXTERNAL_BRG_SIF}"
 echo "  output dataset: ${OUTPUT_DATASET_DIR}"
 echo "  reports: ${REPORTS_DIR}"
 echo "  mode: ${DATASET_MODE}"
+echo "  internal background node types: ${BACKGROUND_NODE_TYPES}"
 
 "${PYTHON_BIN}" -m cvd_biopathnet.cli convert \
   --input "${RAW_GRAPH_DIR}" \
@@ -58,7 +71,8 @@ echo "  mode: ${DATASET_MODE}"
   --mode "${DATASET_MODE}" \
   --pilot-target-limit "${PILOT_TARGET_LIMIT}" \
   --pilot-background-limit "${PILOT_BACKGROUND_LIMIT}" \
-  --external-brg-sif "${EXTERNAL_BRG_SIF}"
+  --external-brg-sif "${EXTERNAL_BRG_SIF}" \
+  "${background_type_args[@]}"
 
 "${PYTHON_BIN}" -m cvd_biopathnet.cli validate-dataset --dataset-dir "${OUTPUT_DATASET_DIR}"
 

@@ -65,6 +65,10 @@ python3 -m cvd_biopathnet.cli convert \
   --target-relation ASSOCIATED_WITH_CONDITION \
   --seed 42 \
   --mode full \
+  --background-node-type Gene \
+  --background-node-type Drug \
+  --background-node-type Condition \
+  --background-node-type Biomarker \
   --external-brg-sif data/raw/brg/pathway_commons_pc2_v14/pc-hgnc.sif.gz
 ```
 
@@ -119,6 +123,7 @@ BIOPATHNET_GPUS=null
 BIOPATHNET_BATCH_SIZE=4
 BIOPATHNET_NUM_EPOCHS=5
 BIOPATHNET_SEED=1024
+BACKGROUND_NODE_TYPES=Gene,Drug,Condition,Biomarker
 BIOPATHNET_VIS_BATCH_SIZE=1
 BIOPATHNET_VIS_TEST_LIMIT=3
 BIOPATHNET_VISUALIZE_TEXT=0
@@ -209,6 +214,15 @@ The raw file is:
 - [data/raw/brg/pathway_commons_pc2_v14/pc-hgnc.sif.gz](/Users/kvand/Documents/B528-class/project/data/raw/brg/pathway_commons_pc2_v14/pc-hgnc.sif.gz)
 
 The conversion pipeline now supports merging this SIF file into `train1.txt`. The current implementation keeps Pathway Commons edges only when both endpoints map to genes already present in the project graph, which keeps the BRG scientifically relevant and computationally tractable for reruns.
+
+The rebuild helper also filters the internal background graph to biological node types only by default:
+
+- `Gene`
+- `Drug`
+- `Condition`
+- `Biomarker`
+
+This removes guideline/snippet/document structure from `train1.txt` so the BRG is mostly mechanistic biology instead of text scaffolding.
 
 ## Pilot and full mode
 

@@ -36,6 +36,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional Pathway Commons-style SIF file to merge into train1 / BRG.",
     )
+    convert_parser.add_argument(
+        "--background-node-type",
+        action="append",
+        default=[],
+        help="Keep internal background edges only when both endpoints are one of these node types.",
+    )
 
     validate_parser = subparsers.add_parser("validate-dataset", help="Validate exported dataset files")
     validate_parser.add_argument("--dataset-dir", required=True, type=Path)
@@ -79,6 +85,7 @@ def main() -> None:
             excluded_relations=args.exclude_relation,
             remove_self_loops=args.remove_self_loops,
             external_brg_sif=args.external_brg_sif,
+            background_node_types=args.background_node_type,
         )
         print(json.dumps(result.validation_report, indent=2, sort_keys=True))
         return

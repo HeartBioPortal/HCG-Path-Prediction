@@ -30,6 +30,7 @@ def convert_to_biopathnet(
     excluded_relations: list[str] | None = None,
     remove_self_loops: bool = False,
     external_brg_sif: Path | None = None,
+    background_node_types: list[str] | None = None,
 ) -> ConversionArtifacts:
     raw_graph = load_graph(input_path)
     normalized_graph = normalize_graph(
@@ -43,6 +44,13 @@ def convert_to_biopathnet(
         normalized_graph,
         target_relation=target_relation,
     )
+    background_filter_summary: dict[str, object] | None = None
+    if background_node_types:
+        background_edges, background_filter_summary = _filter_background_edges_by_node_types(
+            graph=normalized_graph,
+            background_edges=background_edges,
+            allowed_node_types=background_node_types,
+        )
     external_brg_summary: dict[str, int | str] | None = None
     if external_brg_sif is not None:
         background_edges, external_brg_summary = merge_pathway_commons_brg(
@@ -76,6 +84,7 @@ def convert_to_biopathnet(
         "mode": mode,
         "pilot_target_limit": pilot_target_limit if mode == "pilot" else None,
         "pilot_background_limit": pilot_background_limit if mode == "pilot" else None,
+        "background_filter": background_filter_summary,
         "external_brg": external_brg_summary,
     }
 
@@ -98,6 +107,7 @@ def convert_to_biopathnet(
         extra_metadata={
             "duplicates_removed": normalized_graph.duplicates_removed,
             "skipped_edges": normalized_graph.skipped_edges,
+            "background_filter": background_filter_summary,
             "external_brg": external_brg_summary,
         },
     )
@@ -148,3 +158,29 @@ def _apply_pilot_mode(
         candidate_background = sorted(candidate_background, key=lambda edge: edge.triplet())
 
     return selected_targets, candidate_background
+
+
+def _filter_background_edges_by_node_types(
+    *,
+    graph: NormalizedGraph,
+    background_edges: list[EdgeRecord],
+    allowed_node_types: list[str],
+) -> tuple[list[EdgeRecord], dict[str, object]]:
+    allowed = {node_type.strip() for node_type in allowed_node_types if node_type.strip()}
+    filtered_edges: list[EdgeRecord] = []
+    removed_count = 0
+
+    for edge in background_edges:
+        source_type = graph.nodes[edge.source].label
+        target_type = graph.nodes[edge.target].label
+        if source_type in allowed and target_type in allowed:
+            filtered_edges.append(edge)
+        else:
+            removed_count += 1
+
+    summary: dict[str, object] = {
+        "allowed_node_types": sorted(allowed),
+        "kept_edge_count": len(filtered_edges),
+        "removed_edge_count": removed_count,
+    }
+    return filtered_edges, summary
